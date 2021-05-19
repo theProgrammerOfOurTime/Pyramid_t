@@ -101,8 +101,8 @@ void Pyramid_t<Item, func>::eraseTop()
 			pyramid[indexRoot] = pyramid[index];
 			pyramid[index] = tmp;
 			indexRoot = index;
-			indexLeft = 2 * indexLeft + 1;
-			indexRigth = 2 * indexRigth + 2;
+			indexLeft = 2 * indexRoot + 1;
+			indexRigth = 2 * indexRoot + 2;
 		}
 		else { return; }
 	}
