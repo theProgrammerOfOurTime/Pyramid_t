@@ -6,13 +6,15 @@ using namespace std;
 
 int main()
 {
-	vector <int> tmp = {3, 6, 2, 6, 4};
-	Pyramid_t <int> pyramid(tmp);
-	pyramid.add(-1);
-	pyramid.add(0);
-	pyramid.add(4);
-	pyramid.print();
-	pyramid.eraseTop();
-	pyramid.print();
+	vector <int> tmp = {4, 2, 3, 1, 0, 5, 7, 1, 8, -2, 100};
+	Pyramid_t <int, 
+		[](int a, int b)
+		{
+			return a < b;
+		}> pyramid(tmp);
+	while (!pyramid.empty())
+	{
+		cout << pyramid.popTop() << " ";
+	}
 	return 0;
 }
