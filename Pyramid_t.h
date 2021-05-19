@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
-template <class Item>
+template <class Item, bool(*func)(Item, Item)>
 class Pyramid_t
 {
 private:
@@ -15,12 +15,19 @@ public:
 	Item getTop() const;
 	bool empty() const;
 	void eraseTop();
-	Item top();
+	Item popTop();
 	void print() const;
+	int size() const;
 };
 
-template<class Item>
-Pyramid_t<Item>::Pyramid_t(std::vector<Item> listValue)
+template<class Item, bool(*func)(Item, Item)>
+inline int Pyramid_t<Item, func>::size() const
+{
+	return pyramid.size();
+}
+
+template<class Item, bool(*func)(Item, Item)>
+Pyramid_t<Item, func>::Pyramid_t(std::vector<Item> listValue)
 {
 	for (auto it : listValue)
 	{
@@ -28,28 +35,28 @@ Pyramid_t<Item>::Pyramid_t(std::vector<Item> listValue)
 	}
 }
 
-template<class Item>
-inline Item Pyramid_t<Item>::getTop() const
+template<class Item, bool(*func)(Item, Item)>
+inline Item Pyramid_t<Item, func>::getTop() const
 {
-	return pyramid[0];
+	return Item();
 }
 
-template<class Item>
-inline bool Pyramid_t<Item>::empty() const
+template<class Item, bool(*func)(Item, Item)>
+inline bool Pyramid_t<Item, func>::empty() const
 {
 	return pyramid.size() == 0;
 }
 
-template<class Item>
-Item Pyramid_t<Item>::top()
+template<class Item, bool(*func)(Item, Item)>
+Item Pyramid_t<Item, func>::popTop()
 {
 	Item result = pyramid[0];
 	eraseTop();
 	return result;
 }
 
-template<class Item>
-void Pyramid_t<Item>::print() const
+template<class Item, bool(*func)(Item, Item)>
+void Pyramid_t<Item, func>::print() const
 {
 	for (auto it : pyramid)
 	{
@@ -59,14 +66,14 @@ void Pyramid_t<Item>::print() const
 	return;
 }
 
-template <class Item>
-void Pyramid_t<Item>::add(Item item)
+template<class Item, bool(*func)(Item, Item)>
+void Pyramid_t<Item, func>::add(Item item)
 {
 	pyramid.push_back(item);
 	int indexRoot = (pyramid.size() - 2) / 2, indexCurrent = pyramid.size() - 1;
 	while (indexCurrent != 0)
 	{
-		if (pyramid[indexRoot] > pyramid[indexCurrent])
+		if (func(pyramid[indexRoot], pyramid[indexCurrent]))
 		{
 			int tmp = pyramid[indexRoot];
 			pyramid[indexRoot] = pyramid[indexCurrent];
@@ -79,12 +86,33 @@ void Pyramid_t<Item>::add(Item item)
 	return;
 }
 
-
-template<class Item>
-void Pyramid_t<Item>::eraseTop()
+template<class Item, bool(*func)(Item, Item)>
+void Pyramid_t<Item, func>::eraseTop()
 {
 	pyramid[0] = pyramid[pyramid.size() - 1];
 	pyramid.erase(pyramid.end() - 1);
-	//FIXEME
+	int indexRoot = 0, indexLeft = 1, indexRigth = 2;
+	while (indexLeft < pyramid.size() && indexRigth < pyramid.size())
+	{
+		int index = (func(pyramid[indexRigth], pyramid[indexLeft])) ? indexLeft : indexRigth;
+		if (func(pyramid[indexRoot], pyramid[index]))
+		{
+			int tmp = pyramid[indexRoot];
+			pyramid[indexRoot] = pyramid[index];
+			pyramid[index] = tmp;
+			indexRoot = index;
+			indexLeft = 2 * indexLeft + 1;
+			indexRigth = 2 * indexRigth + 2;
+		}
+		else { return; }
+	}
+	if (indexLeft >= pyramid.size() && indexRigth >= pyramid.size()) { return; }
+	int index = (indexLeft < pyramid.size()) ? indexLeft : indexRigth;
+	if (func(pyramid[indexRoot], pyramid[index]))
+	{
+		int tmp = pyramid[indexRoot];
+		pyramid[indexRoot] = pyramid[index];
+		pyramid[index] = tmp;
+	}
 	return;
 }
