@@ -18,7 +18,15 @@ public:
 	Item popTop();
 	void print() const;
 	int size() const;
+	void clear();
 };
+
+template<class Item, bool(*func)(Item, Item)>
+void Pyramid_t<Item, func>::clear()
+{
+	pyramid.clear();
+	return;
+}
 
 template<class Item, bool(*func)(Item, Item)>
 inline int Pyramid_t<Item, func>::size() const
@@ -38,7 +46,7 @@ Pyramid_t<Item, func>::Pyramid_t(std::vector<Item> listValue)
 template<class Item, bool(*func)(Item, Item)>
 inline Item Pyramid_t<Item, func>::getTop() const
 {
-	return Item();
+	return pyramid[0];
 }
 
 template<class Item, bool(*func)(Item, Item)>
@@ -75,13 +83,11 @@ void Pyramid_t<Item, func>::add(Item item)
 	{
 		if (func(pyramid[indexRoot], pyramid[indexCurrent]))
 		{
-			int tmp = pyramid[indexRoot];
-			pyramid[indexRoot] = pyramid[indexCurrent];
-			pyramid[indexCurrent] = tmp;
+			std::swap(pyramid[indexRoot], pyramid[indexCurrent]);
 			indexCurrent = indexRoot;
 			indexRoot = (indexCurrent - 1) / 2;
 		}
-		else { break; }
+		else { return; }
 	}
 	return;
 }
@@ -97,9 +103,7 @@ void Pyramid_t<Item, func>::eraseTop()
 		int index = (func(pyramid[indexRigth], pyramid[indexLeft])) ? indexLeft : indexRigth;
 		if (func(pyramid[indexRoot], pyramid[index]))
 		{
-			int tmp = pyramid[indexRoot];
-			pyramid[indexRoot] = pyramid[index];
-			pyramid[index] = tmp;
+			std::swap(pyramid[indexRoot], pyramid[index]);
 			indexRoot = index;
 			indexLeft = 2 * indexRoot + 1;
 			indexRigth = 2 * indexRoot + 2;
@@ -110,9 +114,7 @@ void Pyramid_t<Item, func>::eraseTop()
 	int index = (indexLeft < pyramid.size()) ? indexLeft : indexRigth;
 	if (func(pyramid[indexRoot], pyramid[index]))
 	{
-		int tmp = pyramid[indexRoot];
-		pyramid[indexRoot] = pyramid[index];
-		pyramid[index] = tmp;
+		std::swap(pyramid[indexRoot], pyramid[index]);
 	}
 	return;
 }
